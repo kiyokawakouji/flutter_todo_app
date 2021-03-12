@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_app/todo_add_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'My Todo App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: TodoListPage(),
@@ -18,43 +19,51 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TodoListPage extends StatelessWidget {
+ // リスト一覧画面用Widget
+class TodoListPage extends StatefulWidget {
+
+  @override
+  _TodoListPageState createState() => _TodoListPageState();
+
+}
+
+class _TodoListPageState extends State<TodoListPage> {
+  // Todoリストのデータ
+  List<String> todoList = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('リスト一覧'),
       ),
-      body: ListView(
-        children: <Widget>[
-          Card(
-            child: ListTile(
-            title: Text('リスト一覧画面'),
-            ),
+      body: ListView.builder(
+      itemCount: todoList.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: ListTile(
+            title: Text(todoList[index]),
           ),
-          Card(
-            child: ListTile(
-              title: Text('リスト一覧画面'),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: Text('リスト一覧画面'),
-            ),
-          ),
-      ],
-            ),
-
+        );
+      },
+    ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
+        onPressed: () async {
+          final newListText = await Navigator.of(context).push(
               MaterialPageRoute(builder: (context) {
                 return TodoAddPage();
-              })
+              }),
           );
+          if (newListText != null){
+            // キャンセルした場合は newListText が null となるので注意
+            setState(() {
+              // リスト追加
+              todoList.add(newListText);
+            });
+          }
         },
         child: Icon(Icons.add),
-      )
+      ),
     );
   }
 }
